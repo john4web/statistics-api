@@ -19,5 +19,5 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('/getProcessData', 'DataController@getProcessData');
-    $router->get('/getTodayData', 'DataController@getTodayData');
+    $router->post('/getTodayData', 'DataController@getTodayData');
 });
