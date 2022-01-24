@@ -96,6 +96,10 @@ class DataController extends Controller
 
         $data = array_values($result);
 
+        if (empty($data)) {
+            return response()->json(['status' => 'error', 'message' => 'Nothing consumed yet!']);
+        }
+
         $now = Carbon::now(new DateTimeZone('Europe/Vienna'))->format('Y-m-d');
         $firstUsageDate = $data[0]['day'];
         $dayArray = $this->getDatesFromRange($firstUsageDate, $now);
