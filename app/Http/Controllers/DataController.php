@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\FoodItem;
 use Carbon\Carbon;
+use DateInterval;
+use DatePeriod;
+use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use stdClass;
@@ -90,8 +93,63 @@ class DataController extends Controller
             }
         }
 
-        $result = array_values($result);
+        $data = array_values($result);
+
+        $now = date("Y-m-d");
+        $firstUsageDate = $data[0]['day'];
+        $dayArray = $this->getDatesFromRange($firstUsageDate, $now);
+
+        $emptyDayArray = [];
+        foreach ($dayArray as $day) {
+            array_push(
+                $emptyDayArray,
+                [
+                    'day' => $day,
+                    'value' => 0,
+                    'carbs' => 0,
+                    'proteins' => 0,
+                    'fat' => 0
+                ]
+            );
+        }
+
+        foreach ($emptyDayArray as $key => $emptyDay) {
+
+            foreach ($data as $fullDay) {
+                if ($emptyDay['day'] === $fullDay['day']) {
+                    $emptyDayArray[$key] = $fullDay;
+                }
+            }
+        }
+
+        $result = $emptyDayArray;
 
         return response()->json(['status' => 'success', 'data' => $result]);
+    }
+
+
+    // Function to get all the dates in given range
+    private function getDatesFromRange($start, $end, $format = 'Y-m-d')
+    {
+
+        // Declare an empty array
+        $array = array();
+
+        // Variable that store the date interval
+        // of period 1 day
+        $interval = new DateInterval('P1D');
+
+        $realEnd = new DateTime($end);
+        $realEnd->add($interval);
+
+        $period = new DatePeriod(new DateTime($start), $interval, $realEnd);
+
+        // Use loop to store date into array
+        foreach ($period as $date) {
+            $array[] = $date->format($format);
+        }
+
+        // Return the array elements
+        return $array;
     }
 }
