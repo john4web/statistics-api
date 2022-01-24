@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
 use DateTime;
+use DateTimeZone;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use stdClass;
@@ -95,7 +96,7 @@ class DataController extends Controller
 
         $data = array_values($result);
 
-        $now = date("Y-m-d");
+        $now = Carbon::now(new DateTimeZone('Europe/Vienna'))->format('Y-m-d');
         $firstUsageDate = $data[0]['day'];
         $dayArray = $this->getDatesFromRange($firstUsageDate, $now);
 
